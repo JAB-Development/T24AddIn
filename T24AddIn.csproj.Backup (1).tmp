@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<TargetFramework>net8.0</TargetFramework>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+	<ApplicationManifest>T24AddIn.addin</ApplicationManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<PackageReference Include="System.Drawing.Common" Version="9.0.3" />
+	<PackageReference Include="Uno.UI" Version="5.6.81" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<Reference Include="RevitAPI">
+	  <HintPath>..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2025\RevitAPI.dll</HintPath>
+	  <Private>False</Private>
+	</Reference>
+	<Reference Include="RevitAPIUI">
+	  <HintPath>..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2025\RevitAPIUI.dll</HintPath>
+	  <Private>False</Private>
+	</Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+	<None Update="Resources\Select.ico">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Features\Tags\" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	<Exec Command="&#xD;&#xA;   Copy &quot;$(TargetDir)T24AddIn.dll&quot; &quot;$(AppData)\Autodesk\Revit\Addins\2025&quot;&#xD;&#xA;&#xD;&#xA;   if exist &quot;$(AppData)\Autodesk\REVIT\Addins\2025&quot; copy &quot;$(ProjectDir)*.addin&quot; &quot;$(AppData)\Autodesk\REVIT\Addins\2025&quot;&#xD;&#xA;&#xD;&#xA;   if exist &quot;$(AppData)\Autodesk\REVIT\Addins\2025\Resources&quot; copy &quot;$(ProjectDir)\Resources&quot; &quot;$(AppData)\Autodesk\REVIT\Addins\2025\Resources&quot;&#xD;&#xA;&#xD;&#xA;  " />
+  </Target>
+
+</Project>
