@@ -24,6 +24,44 @@ namespace T24AddIn.Handlers.AddWindowTagHandler
                     .OfCategory(BuiltInCategory.OST_Windows)
                     .OfClass(typeof(FamilyInstance))
                     .WhereElementIsNotElementType()
+                    .Where(windowElement =>
+                    {
+                        var windowFam = windowElement as FamilyInstance;
+                        Element host = doc.GetElement(windowFam.Host.Id);
+
+                        var windowFunctionParam = windowElement.LookupParameter("Exterior");
+
+
+                        if (host is Wall wall)
+                        {
+                            var functionParam = wall.LookupParameter("Function");
+
+                            var isExteriorWall = functionParam != null &&
+                                                 functionParam.AsValueString()?.Equals("Exterior", StringComparison.OrdinalIgnoreCase) == true;
+
+
+                            Parameter exteriorParam = wall.LookupParameter("Exterior");
+
+
+                            if (exteriorParam is { StorageType: StorageType.Integer } || windowFunctionParam is {StorageType: StorageType.Integer})
+                            {
+                                var isExterior = exteriorParam.AsInteger() == 1 || isExteriorWall || windowFunctionParam.AsInteger() == 1;
+
+                                return isExterior;
+                            }
+                        }
+                        else
+                        {
+                            var hostCategory = host.Category?.Name;
+                            string hostType = host.GetType().Name;
+                            string hostName = host.Name;
+
+                            return false;
+                        }
+
+                        return false;
+
+                    })
                     .ToList();
 
                 //var tag1s = new FilteredElementCollector(doc)

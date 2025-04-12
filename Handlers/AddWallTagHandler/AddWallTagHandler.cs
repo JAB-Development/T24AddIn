@@ -20,12 +20,6 @@ namespace T24AddIn.Handlers.AddWallTagHandler
                 var doc = app.ActiveUIDocument.Document;
                 var view = app.ActiveUIDocument.ActiveGraphicalView;
 
-                var wallCollection1 = new FilteredElementCollector(doc)
-                    .OfCategory(BuiltInCategory.OST_Walls)
-                    .OfClass(typeof(Wall))
-                    .WhereElementIsNotElementType()
-                    .ToList();
-
                 var wallCollection = new FilteredElementCollector(doc)
                     .OfCategory(BuiltInCategory.OST_Walls)
                     .OfClass(typeof(Wall))
