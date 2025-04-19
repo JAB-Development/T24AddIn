@@ -27,6 +27,15 @@
 
   <ItemGroup>
 	<None Update="Resources\Select.ico">
+	  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	</None>
+	<None Update="Resources\Tag.ico">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Update="Resources\Ungroup.ico">
+	  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	</None>
+	<None Update="Resources\ungroup2.ico">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
   </ItemGroup>

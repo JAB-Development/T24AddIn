@@ -1,6 +1,7 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using T24AddIn.Handlers.AddColorToTags;
+using T24AddIn.Handlers.AddCurtainWallHandler;
 using T24AddIn.Handlers.AddDoorTagHandler;
 using T24AddIn.Handlers.AddScheduleHandler;
 using T24AddIn.Handlers.AddScheduleToSheetHandler;
@@ -9,10 +10,12 @@ using T24AddIn.Handlers.AddWallTagHandler;
 using T24AddIn.Handlers.AddWindowTagHandler;
 using T24AddIn.Handlers.CalculateAreaHandler;
 using T24AddIn.Handlers.ImportTagHandler;
+using T24AddIn.Handlers.MoveCurtainWallTagHandler;
 using T24AddIn.Handlers.MoveDoorTagHandler;
 using T24AddIn.Handlers.MoveTagFromWallHandler;
 using T24AddIn.Handlers.MoveWallTagHandler;
 using T24AddIn.Handlers.MoveWindowTagHandler;
+using T24AddIn.Handlers.SetAreaUnitFormatHandler;
 using Color = Autodesk.Revit.DB.Color;
 using TaskDialog = Autodesk.Revit.UI.TaskDialog;
 
@@ -23,6 +26,8 @@ namespace T24AddIn.Features.Tags.Form
         private UIApplication _uiApp;
         private UIDocument _uiDoc;
         private Document _document;
+
+        #region External Events
 
         private readonly ExternalEvent _externalEventAddTagParam;
         private readonly AddTagParameter _addTagParameter = new AddTagParameter();
@@ -65,12 +70,23 @@ namespace T24AddIn.Features.Tags.Form
 
         private readonly ExternalEvent _externalCalculateArea;
         private readonly CalculateAreaHandler _calculateAreaHandler = new CalculateAreaHandler();
+        
+        private readonly ExternalEvent _externalAddCurtainWallTag;
+        private readonly AddCurtainWallHandler _addCurtainWallHandler = new AddCurtainWallHandler();
 
-        public List<string> Properties = new List<string>()
-        {
+        private readonly ExternalEvent _externalMoveCurtainWallTag;
+        private readonly MoveCurtainWallTagHandler _moveCurtainWallTagHandler = new MoveCurtainWallTagHandler();
+
+        private readonly ExternalEvent _externalSetAreaUnitFormat;
+        private readonly SetAreaUnitFormatHandler _setAreaUnitDecimalHandler = new SetAreaUnitFormatHandler();
+
+        #endregion
+
+        public List<string> Properties =
+        [
             "North", "South", "East", "West", "Group 1", "Group 2", "Group 3", "Group 4", "Group 5", "Group 6",
             "Group 7", "Group 8", "All"
-        };
+        ];
 
         public TagForm(UIApplication uiApp)
         {
@@ -95,6 +111,9 @@ namespace T24AddIn.Features.Tags.Form
             _externalMoveTagFromWall = ExternalEvent.Create(_moveTagFromWall);
             _externalAddScheduleToSheet = ExternalEvent.Create(_addScheduleToSheetHandler);
             _externalCalculateArea = ExternalEvent.Create(_calculateAreaHandler);
+            _externalAddCurtainWallTag = ExternalEvent.Create(_addCurtainWallHandler);
+            _externalMoveCurtainWallTag = ExternalEvent.Create(_moveCurtainWallTagHandler);
+            _externalSetAreaUnitFormat = ExternalEvent.Create(_setAreaUnitDecimalHandler);
 
             PropSelect.DataSource = Properties.Where(x => x != "All").ToList();
 
@@ -130,6 +149,7 @@ namespace T24AddIn.Features.Tags.Form
 
                 //calculate Area
                 _externalCalculateArea.Raise();
+                _externalSetAreaUnitFormat.Raise();
             }
             catch (Exception exception)
             {
@@ -217,7 +237,7 @@ namespace T24AddIn.Features.Tags.Form
 
         private void ScheduleGroupComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-           _addScheduleHandler.Group = ScheduleGroupComboBox.SelectedItem.ToString();
+            _addScheduleHandler.Group = ScheduleGroupComboBox.SelectedItem.ToString();
         }
 
         private void ScheduleTagTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -241,6 +261,15 @@ namespace T24AddIn.Features.Tags.Form
 
             //calculate Area
             _externalCalculateArea.Raise();
+        }
+
+        private void TagCurtainWallBtn_Click(object sender, EventArgs e)
+        {
+            _externalAddCurtainWallTag.Raise();
+            _externalMoveCurtainWallTag.Raise();
+
+            _moveTagFromWall.Category = BuiltInCategory.OST_CurtainWallPanelTags;
+            _externalMoveTagFromWall.Raise();
         }
     }
 }

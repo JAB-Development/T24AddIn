@@ -39,7 +39,6 @@ namespace T24AddIn.Handlers.AddWindowTagHandler
                             var isExteriorWall = functionParam != null &&
                                                  functionParam.AsValueString()?.Equals("Exterior", StringComparison.OrdinalIgnoreCase) == true;
 
-
                             Parameter exteriorParam = wall.LookupParameter("Exterior");
 
 
@@ -49,14 +48,6 @@ namespace T24AddIn.Handlers.AddWindowTagHandler
 
                                 return isExterior;
                             }
-                        }
-                        else
-                        {
-                            var hostCategory = host.Category?.Name;
-                            string hostType = host.GetType().Name;
-                            string hostName = host.Name;
-
-                            return false;
                         }
 
                         return false;

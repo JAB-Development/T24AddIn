@@ -5,6 +5,7 @@ using Autodesk.Revit.Attributes;
 using Autodesk.Revit.UI;
 using T24AddIn.Features.Tags;
 using System.Windows.Media.Imaging;
+using T24AddIn.Features.Ungroup;
 
 
 namespace T24AddIn
@@ -22,7 +23,7 @@ namespace T24AddIn
             if (panel.AddItem(new PushButtonData("T24 Tagging", "T24 Tagging", assemblyPath, typeof(TagsCommand).ToString()))
                 is PushButton button)
             {
-                var iconPath = Path.Combine(Path.GetDirectoryName(assemblyPath) ?? string.Empty, "Resources", "Select.ico");
+                var iconPath = Path.Combine(Path.GetDirectoryName(assemblyPath) ?? string.Empty, "Resources", "Tag.ico");
 
                 if (File.Exists(iconPath))
                 {
@@ -35,6 +36,24 @@ namespace T24AddIn
 
                 }
             }
+
+            if (panel.AddItem(new PushButtonData("Ungroup Components", "Ungroup Components", assemblyPath, typeof(UngroupCommand).ToString()))
+                is PushButton ungroupButton)
+            {
+                var iconPathGroup = Path.Combine(Path.GetDirectoryName(assemblyPath) ?? string.Empty, "Resources", "ungroup2.ico");
+
+                if (File.Exists(iconPathGroup))
+                {
+                    var uri = new Uri(iconPathGroup);
+                    var bitmap = new BitmapImage(uri);
+
+                    ungroupButton.LargeImage = bitmap;
+
+                    ungroupButton.ItemText = "Ungroup";
+
+                }
+            }
+
             return Result.Succeeded;
         }
 

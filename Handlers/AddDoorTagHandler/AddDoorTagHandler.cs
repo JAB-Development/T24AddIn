@@ -22,15 +22,42 @@ namespace T24AddIn.Handlers.AddDoorTagHandler
                     .OfCategory(BuiltInCategory.OST_Doors)
                     .OfClass(typeof(FamilyInstance))
                     .WhereElementIsNotElementType()
-                    .ToList();
+                    .Where(doorElement =>
+                    {
+                        var doorFamilyInstance = doorElement as FamilyInstance;
+                        var doorExteriorParam = doorElement.LookupParameter("Exterior");
 
-                //var tags = new FilteredElementCollector(doc)
-                //    .OfCategory(BuiltInCategory.OST_DoorTags)
-                //    .WhereElementIsNotElementType()
-                //    .Cast<IndependentTag>()
-                //    .Select(x => x.Id)
-                //    .Distinct()
-                //    .ToList();
+
+                        if (doorFamilyInstance is null) return false;
+
+                        Element host = doc.GetElement(doorFamilyInstance.Host.Id);
+
+                        if (host is Wall wall)
+                        {
+                            var functionParam = wall.LookupParameter("Function");
+
+                            var isExteriorWall = functionParam != null &&
+                                                 functionParam.AsValueString()?.Equals("Exterior", StringComparison.OrdinalIgnoreCase) == true;
+
+                            if (isExteriorWall)
+                            {
+                                var shit = 1;
+                            }
+
+                            Parameter exteriorParam = wall.LookupParameter("Exterior");
+
+
+                            if (exteriorParam is { StorageType: StorageType.Integer } || doorExteriorParam is { StorageType: StorageType.Integer })
+                            {
+                                var isExterior = exteriorParam.AsInteger() == 1 || isExteriorWall || doorExteriorParam.AsInteger() == 1;
+
+                                return isExterior;
+                            }
+                        }
+
+                        return false;
+                    })
+                    .ToList();
 
                 var tags = new FilteredElementCollector(doc)
                     .OfCategory(BuiltInCategory.OST_DoorTags)
@@ -62,6 +89,7 @@ namespace T24AddIn.Handlers.AddDoorTagHandler
                     return;
                 }
 
+
                 //var taggedDorDictionary = new FilteredElementCollector(doc)
                 //    .OfCategory(BuiltInCategory.OST_DoorTags)
                 //    .WhereElementIsNotElementType()
@@ -71,14 +99,14 @@ namespace T24AddIn.Handlers.AddDoorTagHandler
                 //    .ToDictionary(x => x);
 
 
-                //var taggedDorDictionary = new FilteredElementCollector(doc)
-                //    .OfCategory(BuiltInCategory.OST_DoorTags)
-                //    .WhereElementIsNotElementType()
-                //    .Where(x => x is IndependentTag) // Ensure valid casting
-                //    .Cast<IndependentTag>()
-                //    .Select(x => x.GetTaggedElementIds().FirstOrDefault().HostElementId)
-                //    .Distinct()
-                //    .ToDictionary(x => x);
+                    //var taggedDorDictionary = new FilteredElementCollector(doc)
+                    //    .OfCategory(BuiltInCategory.OST_DoorTags)
+                    //    .WhereElementIsNotElementType()
+                    //    .Where(x => x is IndependentTag) // Ensure valid casting
+                    //    .Cast<IndependentTag>()
+                    //    .Select(x => x.GetTaggedElementIds().FirstOrDefault().HostElementId)
+                    //    .Distinct()
+                    //    .ToDictionary(x => x);
 
 
                 using (var trans = new Transaction(doc, "Add Tags to Doors in All Views"))
