@@ -168,26 +168,12 @@ namespace T24AddIn.Handlers.MoveWallTagHandler
             double currentTagHalfHeight = (currentTagBoundingBox.Max.Y - currentTagBoundingBox.Min.Y) / 2;
 
             // Initialize the required distance to zero
-            double minOffsetX = 0.2;
-            double minOffsetY = 0.2;
+            double minOffsetX = 0;
+            double minOffsetY = 0;
 
             ElementId taggedElementId = currentTag.GetTaggedElementIds().FirstOrDefault().HostElementId;
 
             Element wallEkElement= doc.GetElement(taggedElementId);
-
-
-            Parameter exteriorParam = wallEkElement.LookupParameter("Exterior");
-
-
-            if (exteriorParam is { StorageType: StorageType.Integer })
-            {
-                var isExterior = exteriorParam.AsInteger() == 1;
-
-                if (isExterior)
-                {
-                    var shit = 1;
-                }
-            }
 
             bool isVertical = false;
             if (wallEkElement is Wall wall)
@@ -232,7 +218,7 @@ namespace T24AddIn.Handlers.MoveWallTagHandler
                         if (tagHeaderPosition.X < currentTagHeaderPosition.X)
                             minOffsetX = Math.Max(minOffsetX, overlapX);
                         else
-                            minOffsetX = Math.Min(minOffsetX, -overlapX-0.5);
+                            minOffsetX = Math.Min(minOffsetX, -overlapX);
                     }
                 }
             }

@@ -13,7 +13,7 @@ namespace T24AddIn.Handlers.AddTagParamHandler
         public List<string> Properties =
         [
             "Area1", "North", "South", "East", "West", "Group 1", "Group 2", "Group 3", "Group 4", "Group 5", "Group 6",
-            "Group 7", "Group 8", "Exterior"
+            "Group 7", "Group 8", "Exterior", "Curtain Wall", "Gross Area"
         ];
 
         public void Execute(UIApplication app)
@@ -123,11 +123,13 @@ namespace T24AddIn.Handlers.AddTagParamHandler
                             // Create the shared parameter if it does not exist
 
 
-                            if (propName == "Area1")
+                            if (propName is "Area1" or "Gross Area")
                             {
-                                var option = new ExternalDefinitionCreationOptions(propName, SpecTypeId.Area);
-                                option.UserModifiable = true;
-                                option.Visible = false;
+                                var option = new ExternalDefinitionCreationOptions(propName, SpecTypeId.Area)
+                                {
+                                    UserModifiable = true,
+                                    Visible = propName == "Gross Area" // 👈 Only "Gross Area" is visible
+                                };
 
                                 ExternalDefinitionCreationOptions options1 =
                                     option;
@@ -143,10 +145,39 @@ namespace T24AddIn.Handlers.AddTagParamHandler
 
                         // Bind the shared parameter to the Wall category
                         CategorySet categorySet = new CategorySet();
-                        categorySet.Insert(doorsCategory);
-                        categorySet.Insert(windowCategory);
 
-                        if(propName != "Area1") categorySet.Insert(wallCategory);
+                        //if (propName != "Curtain Wall")
+                        //{
+                        //    categorySet.Insert(doorsCategory);
+                        //    categorySet.Insert(windowCategory);
+                        //}
+
+
+                        //if(propName != "Area1") categorySet.Insert(wallCategory);
+
+                        //if (propName == "Gross Area")
+                        //{
+                        //    categorySet.Insert(wallCategory);
+                        //}
+
+                        if (propName == "Gross Area")
+                        {
+                            // Only insert wall category for Gross Area
+                            categorySet.Insert(wallCategory);
+                        }
+                        else
+                        {
+                            if (propName != "Curtain Wall")
+                            {
+                                categorySet.Insert(doorsCategory);
+                                categorySet.Insert(windowCategory);
+                            }
+
+                            if (propName != "Area1")
+                            {
+                                categorySet.Insert(wallCategory);
+                            }
+                        }
 
 
                         InstanceBinding binding = doc.Application.Create.NewInstanceBinding(categorySet);
@@ -160,7 +191,7 @@ namespace T24AddIn.Handlers.AddTagParamHandler
 
                     // Commit the transaction
                     transaction.Commit();
-                }
+                }   
 
                 TaskDialog.Show("Success", "Tag parameters added to Windows, wall and Doors successfully.");
             }

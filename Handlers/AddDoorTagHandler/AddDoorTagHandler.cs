@@ -2,6 +2,7 @@
 
 using System;
 using System.Linq;
+using Windows.UI.Xaml;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using TaskDialog = Autodesk.Revit.UI.TaskDialog;
@@ -22,15 +23,37 @@ namespace T24AddIn.Handlers.AddDoorTagHandler
                     .OfCategory(BuiltInCategory.OST_Doors)
                     .OfClass(typeof(FamilyInstance))
                     .WhereElementIsNotElementType()
-                    .ToList();
+                    .Where(doorElement =>
+                    {
+                        var doorFamilyInstance = doorElement as FamilyInstance;
+                        var doorExteriorParam = doorElement.LookupParameter("Exterior");
 
-                //var tags = new FilteredElementCollector(doc)
-                //    .OfCategory(BuiltInCategory.OST_DoorTags)
-                //    .WhereElementIsNotElementType()
-                //    .Cast<IndependentTag>()
-                //    .Select(x => x.Id)
-                //    .Distinct()
-                //    .ToList();
+                        if (doorFamilyInstance is null) return false;   
+
+                        Element host = doc.GetElement(doorFamilyInstance.Host.Id);
+
+
+                        if (host is Wall wall)
+                        {
+                            var functionParam = wall.WallType.LookupParameter("Function");
+
+                            var isExteriorWall = functionParam != null &&
+                                                 functionParam.AsValueString()?.Equals("Exterior", StringComparison.OrdinalIgnoreCase) == true;
+
+                            Parameter exteriorParam = wall.LookupParameter("Exterior");
+
+
+                            if (exteriorParam is { StorageType: StorageType.Integer } || doorExteriorParam is { StorageType: StorageType.Integer })
+                            {
+                                var isExterior = exteriorParam.AsInteger() == 1 || isExteriorWall || doorExteriorParam.AsInteger() == 1;
+
+                                return isExterior;
+                            }
+                        }
+
+                        return false;
+                    })
+                    .ToList();
 
                 var tags = new FilteredElementCollector(doc)
                     .OfCategory(BuiltInCategory.OST_DoorTags)
@@ -62,6 +85,7 @@ namespace T24AddIn.Handlers.AddDoorTagHandler
                     return;
                 }
 
+
                 //var taggedDorDictionary = new FilteredElementCollector(doc)
                 //    .OfCategory(BuiltInCategory.OST_DoorTags)
                 //    .WhereElementIsNotElementType()
@@ -71,14 +95,14 @@ namespace T24AddIn.Handlers.AddDoorTagHandler
                 //    .ToDictionary(x => x);
 
 
-                //var taggedDorDictionary = new FilteredElementCollector(doc)
-                //    .OfCategory(BuiltInCategory.OST_DoorTags)
-                //    .WhereElementIsNotElementType()
-                //    .Where(x => x is IndependentTag) // Ensure valid casting
-                //    .Cast<IndependentTag>()
-                //    .Select(x => x.GetTaggedElementIds().FirstOrDefault().HostElementId)
-                //    .Distinct()
-                //    .ToDictionary(x => x);
+                    //var taggedDorDictionary = new FilteredElementCollector(doc)
+                    //    .OfCategory(BuiltInCategory.OST_DoorTags)
+                    //    .WhereElementIsNotElementType()
+                    //    .Where(x => x is IndependentTag) // Ensure valid casting
+                    //    .Cast<IndependentTag>()
+                    //    .Select(x => x.GetTaggedElementIds().FirstOrDefault().HostElementId)
+                    //    .Distinct()
+                    //    .ToDictionary(x => x);
 
 
                 using (var trans = new Transaction(doc, "Add Tags to Doors in All Views"))
@@ -87,7 +111,6 @@ namespace T24AddIn.Handlers.AddDoorTagHandler
 
                     foreach (var door in doorCollector)
                     {
-                        var d = door.GetSubelements();
                         
                         if (IsElementVisibleInView(doc, view, door) || door.Name.Contains("Curtain Wall"))
                         {
@@ -203,7 +226,7 @@ namespace T24AddIn.Handlers.AddDoorTagHandler
             var famSymbol = new FilteredElementCollector(doc)
                 .OfClass(typeof(FamilySymbol))
                 .Cast<FamilySymbol>()
-                .FirstOrDefault(symbol => symbol.Name == "K2 Door Tag");
+                .FirstOrDefault(symbol => symbol.Name == "K2D Door Tag");
 
 
             return famSymbol?.Id;    

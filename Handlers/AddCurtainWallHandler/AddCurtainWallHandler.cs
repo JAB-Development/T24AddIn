@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Autodesk.Revit.DB;
@@ -9,92 +8,104 @@ using Autodesk.Revit.UI;
 using TaskDialog = Autodesk.Revit.UI.TaskDialog;
 using View = Autodesk.Revit.DB.View;
 
-namespace T24AddIn.Handlers.AddWallTagHandler
+namespace T24AddIn.Handlers.AddCurtainWallHandler
 {
-    internal class AddWallTagHandler : IExternalEventHandler
+    internal class AddCurtainWallHandler : IExternalEventHandler
     {
         public void Execute(UIApplication app)
         {
             try
             {
                 var doc = app.ActiveUIDocument.Document;
-                var view = app.ActiveUIDocument.ActiveGraphicalView;
+                var view = app.ActiveUIDocument.ActiveView;
 
-                var wallCollection = new FilteredElementCollector(doc)
+                var curtainWallCollector = new FilteredElementCollector(doc)
                     .OfCategory(BuiltInCategory.OST_Walls)
                     .OfClass(typeof(Wall))
                     .WhereElementIsNotElementType()
                     .Where(wallElement =>
                     {
                         WallType wallType = doc.GetElement(wallElement.GetTypeId()) as WallType;
+
                         if (wallType == null) return false;
 
-                        if (wallType.Kind == WallKind.Curtain)
+                        bool isCurtain = wallType.Name.Contains("Curtain", StringComparison.OrdinalIgnoreCase);
+
+                        var exteriorParam = wallElement.LookupParameter("Exterior");
+
+                        var curtainWallParam = wallElement.LookupParameter("Curtain Wall");
+
+                        var isCheckedAsCurtainWall = curtainWallParam is { StorageType: StorageType.Integer } &&
+                                                     curtainWallParam.AsInteger() == 1;
+
+                        if (isCheckedAsCurtainWall)
                         {
-                            return false; 
+                            var shit = 1;
                         }
+
+                        if (wallType.Kind != WallKind.Curtain && !isCurtain && !isCheckedAsCurtainWall)
+                        {
+                            return false;
+                        };
 
                         var functionParam = wallType.LookupParameter("Function");
 
-                        var isExteriorWall = functionParam != null &&
-                                         functionParam.AsValueString()?.Equals("Exterior", StringComparison.OrdinalIgnoreCase) == true;
+                        bool isExteriorByFunction = functionParam != null &&
+                                                    functionParam.AsValueString()?.Equals("Exterior", StringComparison.OrdinalIgnoreCase) == true;
 
-                        Parameter exteriorParam = wallElement.LookupParameter("Exterior");
+    
+                        bool isExteriorByYesNo = exteriorParam is { StorageType: StorageType.Integer } &&
+                                                 exteriorParam.AsInteger() == 1;
 
-
-                        if (exteriorParam is { StorageType: StorageType.Integer })
-                        {
-                            var isExterior = exteriorParam.AsInteger() == 1 || isExteriorWall;
-
-                            return isExterior;
-                        }
-
-                        return false;
+                        return isExteriorByFunction || isExteriorByYesNo || isCurtain || isCheckedAsCurtainWall;
                     })
                     .ToList();
 
-                var wallIds = wallCollection.Select(x => x.Id).ToHashSet();
+                var hostElements = curtainWallCollector.Select(x => x.Id);
 
                 var tags = new FilteredElementCollector(doc)
                     .OfCategory(BuiltInCategory.OST_WallTags)
                     .WhereElementIsNotElementType()
-                    .Where(x => x is IndependentTag wallTag && wallIds.Contains(wallTag.GetTaggedElementIds().FirstOrDefault().HostElementId)) // Ensure valid casting
+                    .Where(x => x is IndependentTag tag && hostElements.Contains(tag.GetTaggedElementIds().FirstOrDefault().HostElementId)) // Ensure valid casting
                     .Select(x => x.Id)
                     .Distinct()
                     .ToList();
 
-                using (Transaction trans = new Transaction(doc, "Delete All Doors"))
+                ElementId tagTypeId = FindDefaultTagTypeId(doc);
+
+                var tagInstances = new FilteredElementCollector(doc)
+                    .OfCategory(BuiltInCategory.OST_WallTags)
+                    .WhereElementIsNotElementType() // We're now looking for instances
+                    .Where(tag => tag.GetTypeId() == tagTypeId)
+                    .ToList();
+
+                using (Transaction trans = new Transaction(doc, "Delete All Curtain Walls"))
                 {
                     trans.Start();
 
-                    foreach (ElementId tag in tags)
+                    foreach (var tag in tagInstances)
                     {
-                        doc.Delete(tag);
+                        if (tag == null) continue;
+
+                        doc.Delete(tag.Id);
                     }
 
                     trans.Commit();
                 }
 
-                ElementId tagTypeId = FindDefaultTagTypeId(doc);
+
 
                 if (tagTypeId == null)
                 {
                     return;
                 }
 
-                //var taggedWallDictionary = new FilteredElementCollector(doc)
-                //    .OfCategory(BuiltInCategory.OST_WallTags)
-                //    .WhereElementIsNotElementType()
-                //    .Cast<IndependentTag>()
-                //    .Select(x => x.GetTaggedElementIds().FirstOrDefault().HostElementId)
-                //    .Distinct()
-                //    .ToDictionary(x => x);
 
                 using (var trans = new Transaction(doc, "Add Tags to Walls in All Views"))
                 {
                     trans.Start();
 
-                    foreach (var wall in wallCollection)
+                    foreach (var wall in curtainWallCollector)
                     {
                         if (IsElementVisibleInView(doc, view, wall))
                         {
@@ -138,18 +149,19 @@ namespace T24AddIn.Handlers.AddWallTagHandler
 
                     trans.Commit();
                 }
-
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                TaskDialog.Show("Error", $"An unexpected error occurred: {e.Message}");
+                throw;
             }
+
+
         }
 
         public string GetName()
         {
-            return "AddWallTagHandler";
+            return "AddCurtainWallHandler";
         }
 
         private bool IsElementVisibleInView(Document doc, View view, Element element)
@@ -164,7 +176,7 @@ namespace T24AddIn.Handlers.AddWallTagHandler
                 .OfClass(typeof(FamilySymbol))
                 .OfCategory(BuiltInCategory.OST_WallTags) // Filter for Wall Tags
                 .Cast<FamilySymbol>()
-                .Where(x => x.FamilyName == "K2D Wall Tag")
+                .Where(x => x.FamilyName == "K2D Curtain Wall Tag")
                 .ToList();
 
 
