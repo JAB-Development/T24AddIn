@@ -201,18 +201,18 @@ namespace T24AddIn.Handlers.MoveCurtainWallTagHandler
 
                 Element wallEkElement = doc.GetElement(taggedElementId);
 
-                Parameter exteriorParam = wallEkElement.LookupParameter("Exterior");
+                //Parameter exteriorParam = wallEkElement.LookupParameter("Exterior");
 
 
-                if (exteriorParam is { StorageType: StorageType.Integer })
-                {
-                    var isExterior = exteriorParam.AsInteger() == 1;
+                //if (exteriorParam is { StorageType: StorageType.Integer })
+                //{
+                //    var isExterior = exteriorParam.AsInteger() == 1;
 
-                    if (isExterior)
-                    {
-                        var shit = 1;
-                    }
-                }
+                //    if (isExterior)
+                //    {
+                //        var shit = 1;
+                //    }
+                //}
 
                 bool isVertical = false;
                 if (wallEkElement is Wall wall)

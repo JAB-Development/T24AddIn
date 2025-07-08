@@ -26,6 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
+	<None Update="Resources\Region.ico">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
 	<None Update="Resources\Select.ico">
 	  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	</None>

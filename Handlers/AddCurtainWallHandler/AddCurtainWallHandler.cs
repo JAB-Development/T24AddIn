@@ -31,24 +31,24 @@ namespace T24AddIn.Handlers.AddCurtainWallHandler
 
                         bool isCurtain = wallType.Name.Contains("Curtain", StringComparison.OrdinalIgnoreCase);
 
-                        var exteriorParam = wallType.LookupParameter("Exterior");
+                        var exteriorParam = wallElement.LookupParameter("Exterior");
 
-                        if (exteriorParam is { StorageType: StorageType.Integer })
+                        var curtainWallParam = wallElement.LookupParameter("Curtain Wall");
+
+                        var isCheckedAsCurtainWall = curtainWallParam is { StorageType: StorageType.Integer } &&
+                                                     curtainWallParam.AsInteger() == 1;
+
+                        if (isCheckedAsCurtainWall)
                         {
-                            var isExterior = exteriorParam.AsInteger() == 1;
-
-                            if (isExterior)
-                            {
-                                var shit = 1;
-                            }
+                            var shit = 1;
                         }
 
-                        if (wallType.Kind != WallKind.Curtain || !isCurtain) return false;
+                        if (wallType.Kind != WallKind.Curtain && !isCurtain && !isCheckedAsCurtainWall)
+                        {
+                            return false;
+                        };
 
                         var functionParam = wallType.LookupParameter("Function");
-
-                        if (!isCurtain) return false;
-
 
                         bool isExteriorByFunction = functionParam != null &&
                                                     functionParam.AsValueString()?.Equals("Exterior", StringComparison.OrdinalIgnoreCase) == true;
@@ -57,7 +57,7 @@ namespace T24AddIn.Handlers.AddCurtainWallHandler
                         bool isExteriorByYesNo = exteriorParam is { StorageType: StorageType.Integer } &&
                                                  exteriorParam.AsInteger() == 1;
 
-                        return isExteriorByFunction || isExteriorByYesNo || isCurtain;
+                        return isExteriorByFunction || isExteriorByYesNo || isCurtain || isCheckedAsCurtainWall;
                     })
                     .ToList();
 
@@ -71,19 +71,29 @@ namespace T24AddIn.Handlers.AddCurtainWallHandler
                     .Distinct()
                     .ToList();
 
-                using (Transaction trans = new Transaction(doc, "Delete All Doors"))
+                ElementId tagTypeId = FindDefaultTagTypeId(doc);
+
+                var tagInstances = new FilteredElementCollector(doc)
+                    .OfCategory(BuiltInCategory.OST_WallTags)
+                    .WhereElementIsNotElementType() // We're now looking for instances
+                    .Where(tag => tag.GetTypeId() == tagTypeId)
+                    .ToList();
+
+                using (Transaction trans = new Transaction(doc, "Delete All Curtain Walls"))
                 {
                     trans.Start();
 
-                    foreach (ElementId tag in tags)
+                    foreach (var tag in tagInstances)
                     {
-                        doc.Delete(tag);
+                        if (tag == null) continue;
+
+                        doc.Delete(tag.Id);
                     }
 
                     trans.Commit();
                 }
 
-                ElementId tagTypeId = FindDefaultTagTypeId(doc);
+
 
                 if (tagTypeId == null)
                 {
@@ -166,7 +176,7 @@ namespace T24AddIn.Handlers.AddCurtainWallHandler
                 .OfClass(typeof(FamilySymbol))
                 .OfCategory(BuiltInCategory.OST_WallTags) // Filter for Wall Tags
                 .Cast<FamilySymbol>()
-                .Where(x => x.FamilyName == "K2 Wall Tag")
+                .Where(x => x.FamilyName == "K2D Curtain Wall Tag")
                 .ToList();
 
 

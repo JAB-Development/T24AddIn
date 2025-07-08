@@ -41,14 +41,20 @@ namespace T24AddIn.Handlers.ImportTagHandler
 
                             switch (last)
                             {
-                                case "K2 Door Tag.rfa":
+                                case "K2D Door Tag.rfa":
                                     LoadFamilyIntoProject(doc, tagFilePath, BuiltInCategory.OST_Doors);
                                     break;
-                                case "K2 Wall Tag.rfa":
+                                case "K2D Wall Tag.rfa":
                                     LoadFamilyIntoProject(doc, tagFilePath, BuiltInCategory.OST_Walls);
                                     break;
-                                case "K2 Window Tag.rfa":
+                                case "K2D Curtain Wall Tag.rfa":
+                                    LoadFamilyIntoProject(doc, tagFilePath, BuiltInCategory.OST_Walls);
+                                    break;
+                                case "K2D Window Tag.rfa":
                                     LoadFamilyIntoProject(doc, tagFilePath, BuiltInCategory.OST_Windows);
+                                    break;
+                                case "K2D Hatch Tag.rfa":
+                                    LoadFamilyIntoProject(doc, tagFilePath, BuiltInCategory.OST_DetailComponents);
                                     break;
                             }
 
@@ -100,7 +106,6 @@ namespace T24AddIn.Handlers.ImportTagHandler
                 }
 
                 trans.Commit();
-
             }
 
         }

@@ -2,6 +2,7 @@
 
 using System;
 using System.Linq;
+using Windows.UI.Xaml;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using TaskDialog = Autodesk.Revit.UI.TaskDialog;
@@ -27,22 +28,17 @@ namespace T24AddIn.Handlers.AddDoorTagHandler
                         var doorFamilyInstance = doorElement as FamilyInstance;
                         var doorExteriorParam = doorElement.LookupParameter("Exterior");
 
-
-                        if (doorFamilyInstance is null) return false;
+                        if (doorFamilyInstance is null) return false;   
 
                         Element host = doc.GetElement(doorFamilyInstance.Host.Id);
 
+
                         if (host is Wall wall)
                         {
-                            var functionParam = wall.LookupParameter("Function");
+                            var functionParam = wall.WallType.LookupParameter("Function");
 
                             var isExteriorWall = functionParam != null &&
                                                  functionParam.AsValueString()?.Equals("Exterior", StringComparison.OrdinalIgnoreCase) == true;
-
-                            if (isExteriorWall)
-                            {
-                                var shit = 1;
-                            }
 
                             Parameter exteriorParam = wall.LookupParameter("Exterior");
 
@@ -115,7 +111,6 @@ namespace T24AddIn.Handlers.AddDoorTagHandler
 
                     foreach (var door in doorCollector)
                     {
-                        var d = door.GetSubelements();
                         
                         if (IsElementVisibleInView(doc, view, door) || door.Name.Contains("Curtain Wall"))
                         {
@@ -231,7 +226,7 @@ namespace T24AddIn.Handlers.AddDoorTagHandler
             var famSymbol = new FilteredElementCollector(doc)
                 .OfClass(typeof(FamilySymbol))
                 .Cast<FamilySymbol>()
-                .FirstOrDefault(symbol => symbol.Name == "K2 Door Tag");
+                .FirstOrDefault(symbol => symbol.Name == "K2D Door Tag");
 
 
             return famSymbol?.Id;    

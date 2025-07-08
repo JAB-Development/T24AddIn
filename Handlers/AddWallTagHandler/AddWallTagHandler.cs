@@ -164,7 +164,7 @@ namespace T24AddIn.Handlers.AddWallTagHandler
                 .OfClass(typeof(FamilySymbol))
                 .OfCategory(BuiltInCategory.OST_WallTags) // Filter for Wall Tags
                 .Cast<FamilySymbol>()
-                .Where(x => x.FamilyName == "K2 Wall Tag")
+                .Where(x => x.FamilyName == "K2D Wall Tag")
                 .ToList();
 
 

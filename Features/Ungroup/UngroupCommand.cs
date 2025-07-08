@@ -38,6 +38,17 @@ namespace T24AddIn.Features.Ungroup
 
                 if (selectedElement is Group selectedGroup)
                 {
+                    TaskDialog td = new TaskDialog("Confirmation");
+                    td.MainInstruction = "This will ungroup all groups with the name '" + selectedGroup.Name + "' in the current view.";
+                    td.MainContent = "Do you want to continue?";
+                    td.CommonButtons = TaskDialogCommonButtons.Yes | TaskDialogCommonButtons.No;
+                    td.DefaultButton = TaskDialogResult.No;
+
+                    TaskDialogResult result = td.Show();
+
+                    if (result != TaskDialogResult.Yes)
+                        return Result.Cancelled;
+
                     var selectedCollection = new FilteredElementCollector(doc, activeView.Id)
                         .OfClass(typeof(Group))
                         .Cast<Group>()

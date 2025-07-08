@@ -24,35 +24,35 @@ namespace T24AddIn.Handlers.AddWindowTagHandler
                     .OfCategory(BuiltInCategory.OST_Windows)
                     .OfClass(typeof(FamilyInstance))
                     .WhereElementIsNotElementType()
-                    .Where(windowElement =>
-                    {
-                        var windowFam = windowElement as FamilyInstance;
-                        Element host = doc.GetElement(windowFam.Host.Id);
+                    //.Where(windowElement =>
+                    //{
+                    //    var windowFam = windowElement as FamilyInstance;
+                    //    Element host = doc.GetElement(windowFam.Host.Id);
 
-                        var windowFunctionParam = windowElement.LookupParameter("Exterior");
-
-
-                        if (host is Wall wall)
-                        {
-                            var functionParam = wall.LookupParameter("Function");
-
-                            var isExteriorWall = functionParam != null &&
-                                                 functionParam.AsValueString()?.Equals("Exterior", StringComparison.OrdinalIgnoreCase) == true;
-
-                            Parameter exteriorParam = wall.LookupParameter("Exterior");
+                    //    var windowFunctionParam = windowElement.LookupParameter("Exterior");
 
 
-                            if (exteriorParam is { StorageType: StorageType.Integer } || windowFunctionParam is {StorageType: StorageType.Integer})
-                            {
-                                var isExterior = exteriorParam.AsInteger() == 1 || isExteriorWall || windowFunctionParam.AsInteger() == 1;
+                    //    if (host is Wall wall)
+                    //    {
+                    //        var functionParam = wall.LookupParameter("Function");
 
-                                return isExterior;
-                            }
-                        }
+                    //        var isExteriorWall = functionParam != null &&
+                    //                             functionParam.AsValueString()?.Equals("Exterior", StringComparison.OrdinalIgnoreCase) == true;
 
-                        return false;
+                    //        Parameter exteriorParam = wall.LookupParameter("Exterior");
 
-                    })
+
+                    //        if (exteriorParam is { StorageType: StorageType.Integer } || windowFunctionParam is {StorageType: StorageType.Integer})
+                    //        {
+                    //            var isExterior = exteriorParam.AsInteger() == 1 || isExteriorWall || windowFunctionParam.AsInteger() == 1;
+
+                    //            return isExterior;
+                    //        }
+                    //    }
+
+                    //    return false;
+
+                    //})
                     .ToList();
 
                 //var tag1s = new FilteredElementCollector(doc)
@@ -170,7 +170,7 @@ namespace T24AddIn.Handlers.AddWindowTagHandler
             var famSymbol = new FilteredElementCollector(doc)
                 .OfClass(typeof(FamilySymbol))
                 .Cast<FamilySymbol>()
-                .FirstOrDefault(symbol => symbol.Name == "K2 Window Tag");
+                .FirstOrDefault(symbol => symbol.Name == "K2D Window Tag");
 
 
             return famSymbol?.Id;

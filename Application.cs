@@ -6,6 +6,7 @@ using Autodesk.Revit.UI;
 using T24AddIn.Features.Tags;
 using System.Windows.Media.Imaging;
 using T24AddIn.Features.Ungroup;
+using T24AddIn.Features.Region;
 
 
 namespace T24AddIn
@@ -50,6 +51,23 @@ namespace T24AddIn
                     ungroupButton.LargeImage = bitmap;
 
                     ungroupButton.ItemText = "Ungroup";
+
+                }
+            }
+
+            if (panel.AddItem(new PushButtonData("Create Region", "Create Region", assemblyPath, typeof(RegionCommand).ToString()))
+                is PushButton regionButton)
+            {
+                var iconPathGroup = Path.Combine(Path.GetDirectoryName(assemblyPath) ?? string.Empty, "Resources", "Region.ico");
+
+                if (File.Exists(iconPathGroup))
+                {
+                    var uri = new Uri(iconPathGroup);
+                    var bitmap = new BitmapImage(uri);
+
+                    regionButton.LargeImage = bitmap;
+
+                    regionButton.ItemText = "Region";  
 
                 }
             }

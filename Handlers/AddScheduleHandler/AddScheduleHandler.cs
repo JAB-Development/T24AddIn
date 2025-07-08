@@ -38,35 +38,36 @@ namespace T24AddIn.Handlers.AddScheduleHandler
 
                 var doc = app.ActiveUIDocument.Document;
 
-                FilteredElementCollector collector1 = new FilteredElementCollector(doc);
-                var schedule = collector1
-                    .OfClass(typeof(ViewSchedule))
-                    .Cast<ViewSchedule>()
-                    .Where(vs => !vs.IsTemplate && vs.Name == "Door Schedule").FirstOrDefault(); // Optional: skip template schedules
+                //FilteredElementCollector collector1 = new FilteredElementCollector(doc);
+                //var schedule = collector1
+                //    .OfClass(typeof(ViewSchedule))
+                //    .Cast<ViewSchedule>()
+                //    .Where(vs => !vs.IsTemplate && vs.Name == "Door Schedule")
+                //    .FirstOrDefault(); // Optional: skip template schedules
 
-                if (schedule != null)
-                {
-                    ScheduleDefinition def = schedule.Definition;
-                    int fieldCount = def.GetFieldCount();
+                //if (schedule != null)
+                //{
+                //    ScheduleDefinition def = schedule.Definition;
+                //    int fieldCount = def.GetFieldCount();
 
-                    for (int i = 0; i < fieldCount; i++)
-                    {
-                        ScheduleField field = def.GetField(i);
-                        string fieldName = field.GetName();
+                //    for (int i = 0; i < fieldCount; i++)
+                //    {
+                //        ScheduleField field = def.GetField(i);
+                //        string fieldName = field.GetName();
 
-                        //TaskDialog.Show("Field", $"Field {i + 1}: {fieldName}");
+                //        //TaskDialog.Show("Field", $"Field {i + 1}: {fieldName}");
 
-                        ElementId paramId = field.ParameterId;
+                //        ElementId paramId = field.ParameterId;
 
 
-                        string builtinParamName = "N/A";
-                        if (Enum.IsDefined(typeof(BuiltInParameter), paramId.Value))
-                        {
-                            BuiltInParameter bip = (BuiltInParameter)paramId.Value;
-                            builtinParamName = bip.ToString();
-                        }
-                    }
-                }
+                //        string builtinParamName = "N/A";
+                //        if (Enum.IsDefined(typeof(BuiltInParameter), paramId.Value))
+                //        {
+                //            BuiltInParameter bip = (BuiltInParameter)paramId.Value;
+                //            builtinParamName = bip.ToString();
+                //        }
+                //    }
+                //}
 
 
 
@@ -95,8 +96,6 @@ namespace T24AddIn.Handlers.AddScheduleHandler
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.ELEM_TYPE_PARAM), "Family Type");
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.UNIFORMAT_CODE), "Assembly Code");
 
-
-
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.ROOM_LEVEL_ID), "Level");
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.ALL_MODEL_MANUFACTURER), "Manufacturer");
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.CASEWORK_CONSTRUCTION_TYPE), "Assembly Name");
@@ -106,22 +105,21 @@ namespace T24AddIn.Handlers.AddScheduleHandler
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.DOOR_FRAME_TYPE), "Frame Type");
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.DOOR_FRAME_MATERIAL), "Frame Material");
 
-
-
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.DOOR_HEIGHT), "Height (ft)");
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.DOOR_WIDTH), "Width (ft)");
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.DOOR_THICKNESS), "Thickness (ft)");
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.INSTANCE_SILL_HEIGHT_PARAM), "Still Height");
+
                             break;
                         case "Walls":
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.ALL_MODEL_MARK), "Walls #");
-
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.ELEM_FAMILY_PARAM), "Family Name");
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.ELEM_TYPE_PARAM), "Family Type");
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.UNIFORMAT_CODE), "Assembly Code");
 
-                            AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.ROOM_LEVEL_ID), "Level");
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.ALL_MODEL_MANUFACTURER), "Manufacturer");
+                            AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.CASEWORK_CONSTRUCTION_TYPE), "Assembly Name");
+                            AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.ALL_MODEL_COST), "Cost");
 
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.ALL_MODEL_DESCRIPTION), "Description");
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.WALL_USER_HEIGHT_PARAM), "Height (ft)");
@@ -132,40 +130,23 @@ namespace T24AddIn.Handlers.AddScheduleHandler
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.ALL_MODEL_MARK), "Window #");
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.ELEM_FAMILY_PARAM), "Family Name");
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.ELEM_TYPE_PARAM), "Family Type");
-
-
-
-                            AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.WINDOW_HEIGHT), "Height (ft)");
-                            AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.WINDOW_WIDTH), "Width (ft)");
-                            AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.WINDOW_THICKNESS), "Thickness (ft)");
+                            AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.ELEM_TYPE_PARAM), "Family Type");
+                            AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.UNIFORMAT_CODE), "Assembly Code");
 
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.ROOM_LEVEL_ID), "Level");
-                            AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.INSTANCE_SILL_HEIGHT_PARAM), "Still Height");
-
-
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.ALL_MODEL_MANUFACTURER), "Manufacturer");
-                            AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.ASSEMBLY_NAME), "Assembly Name");
-
+                            AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.CASEWORK_CONSTRUCTION_TYPE), "Assembly Name");
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.ALL_MODEL_COST), "Cost");
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.ALL_MODEL_DESCRIPTION), "Description");
 
+                            AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.WINDOW_HEIGHT), "Height (ft)");
+                            AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.WINDOW_WIDTH), "Width (ft)");
+                            AddRegularFieldToSchedule(groupViewSchedule,
+                                new ElementId(BuiltInParameter.WINDOW_THICKNESS), "Thickness (ft)");
 
-
-                            var schedulableField1 =
-                                groupViewSchedule.Definition.GetSchedulableFields()
-                                    .Select(x => new { Name = x.GetName(doc), test =x.GetCustomFieldData()})
-                                    .ToList();
-
-                            var constructionTypeField = groupViewSchedule.Definition.GetSchedulableFields()
-                                .FirstOrDefault(f => f.GetName(doc).Equals("Manufacturer", StringComparison.InvariantCultureIgnoreCase));
-
+                            AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.INSTANCE_SILL_HEIGHT_PARAM), "Still Height");
 
                             AddRegularFieldToSchedule(groupViewSchedule, new ElementId(BuiltInParameter.WINDOW_OPERATION_TYPE), "Operation");
-
-
-
-
-
 
                             break;
                     }
@@ -174,12 +155,21 @@ namespace T24AddIn.Handlers.AddScheduleHandler
 
                     var schedulableFieldArea = def.GetSchedulableFields().FirstOrDefault(sf => sf.GetName(doc) == "Area1");
                     var schedulableFieldAreaWall= def.GetSchedulableFields().FirstOrDefault(sf => sf.GetName(doc) == "Area");
+                    var schedulableGrossArea = def.GetSchedulableFields().FirstOrDefault(sf => sf.GetName(doc) == "Gross Area");
+
 
                     if (schedulableFieldAreaWall != null & TagType == "Walls")
                     {
-                        ScheduleField field = groupViewSchedule.Definition.AddField(schedulableFieldAreaWall);
+                        ScheduleField field = groupViewSchedule.Definition.AddField(schedulableFieldAreaWall);  
 
                         field.ColumnHeading = "Area (sq. ft)";
+                    }
+
+                    if (schedulableGrossArea != null & TagType == "Walls")
+                    {
+                        ScheduleField field = groupViewSchedule.Definition.AddField(schedulableGrossArea);
+
+                        field.ColumnHeading = "Gross Area (sq. ft)";
                     }
 
 
@@ -207,6 +197,14 @@ namespace T24AddIn.Handlers.AddScheduleHandler
                     ScheduleField field2 = def.GetField(2);
                     ScheduleField field3 = def.GetField(3);
 
+                    List<ScheduleField> allFields = new List<ScheduleField>();
+
+                    int fieldCount = def.GetFieldCount();
+
+                    for (int i = 0; i < fieldCount; i++)
+                    {
+                        allFields.Add(def.GetField(i));
+                    }
 
                     var group = new FilteredElementCollector(doc)
                         .OfCategory(cat)
@@ -301,14 +299,20 @@ namespace T24AddIn.Handlers.AddScheduleHandler
 
                     style0.BackgroundColor = new Color(color.Red, color.Green, color.Blue);
 
-                    field0.SetStyle(style);
-                    //field0.SetFormatOptions(options0);
-                    field1.SetStyle(style);
-                    field1.SetFormatOptions(options);
-                    field2.SetStyle(style);
-                    field2.SetFormatOptions(options);
-                    field3.SetStyle(style);
-                    field3.SetFormatOptions(options);
+                    //field0.SetStyle(style);
+                    ////field0.SetFormatOptions(options0);
+                    //field1.SetStyle(style);
+                    //field1.SetFormatOptions(options);
+                    //field2.SetStyle(style);
+                    //field2.SetFormatOptions(options);
+                    //field3.SetStyle(style);
+                    //field3.SetFormatOptions(options);
+
+                    allFields.ForEach(x =>
+                    {
+                        x.SetStyle(style);
+                        x.SetFormatOptions(options);
+                    });
 
                     trans.Commit();
                 }

@@ -9,6 +9,7 @@ using T24AddIn.Handlers.AddTagParamHandler;
 using T24AddIn.Handlers.AddWallTagHandler;
 using T24AddIn.Handlers.AddWindowTagHandler;
 using T24AddIn.Handlers.CalculateAreaHandler;
+using T24AddIn.Handlers.CalculateGrossAreaHandler;
 using T24AddIn.Handlers.ImportTagHandler;
 using T24AddIn.Handlers.MoveCurtainWallTagHandler;
 using T24AddIn.Handlers.MoveDoorTagHandler;
@@ -70,7 +71,7 @@ namespace T24AddIn.Features.Tags.Form
 
         private readonly ExternalEvent _externalCalculateArea;
         private readonly CalculateAreaHandler _calculateAreaHandler = new CalculateAreaHandler();
-        
+
         private readonly ExternalEvent _externalAddCurtainWallTag;
         private readonly AddCurtainWallHandler _addCurtainWallHandler = new AddCurtainWallHandler();
 
@@ -79,6 +80,9 @@ namespace T24AddIn.Features.Tags.Form
 
         private readonly ExternalEvent _externalSetAreaUnitFormat;
         private readonly SetAreaUnitFormatHandler _setAreaUnitDecimalHandler = new SetAreaUnitFormatHandler();
+
+        private readonly ExternalEvent _externalCalculateGrossWallArea;
+        private readonly CalculateGrossAreaHandler _calculateGrossWallAreaHandler = new CalculateGrossAreaHandler();
 
         #endregion
 
@@ -114,10 +118,11 @@ namespace T24AddIn.Features.Tags.Form
             _externalAddCurtainWallTag = ExternalEvent.Create(_addCurtainWallHandler);
             _externalMoveCurtainWallTag = ExternalEvent.Create(_moveCurtainWallTagHandler);
             _externalSetAreaUnitFormat = ExternalEvent.Create(_setAreaUnitDecimalHandler);
+            _externalCalculateGrossWallArea = ExternalEvent.Create(_calculateGrossWallAreaHandler);
 
             PropSelect.DataSource = Properties.Where(x => x != "All").ToList();
 
-            TagType.DataSource = new List<string> { "Doors", "Walls", "Windows" };
+            TagType.DataSource = new List<string> { "Doors", "Walls", "Windows", };
             ScheduleTagTypeComboBox.DataSource = new List<string> { "Doors", "Walls", "Windows" };
 
             ScheduleGroupComboBox.DataSource = Properties;
@@ -205,7 +210,6 @@ namespace T24AddIn.Features.Tags.Form
                 var color = colorDialog1.Color;
                 Config.Color = new Color(color.R, color.G, color.B);
             }
-
         }
 
         private void PropSelect_SelectedIndexChanged(object sender, EventArgs e)
@@ -270,6 +274,11 @@ namespace T24AddIn.Features.Tags.Form
 
             _moveTagFromWall.Category = BuiltInCategory.OST_CurtainWallPanelTags;
             _externalMoveTagFromWall.Raise();
+        }
+
+        private void GrossWallBtn_Click(object sender, EventArgs e)
+        {
+            _externalCalculateGrossWallArea.Raise();
         }
     }
 }

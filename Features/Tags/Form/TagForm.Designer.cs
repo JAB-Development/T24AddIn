@@ -53,6 +53,7 @@
             label2 = new Label();
             label1 = new Label();
             TagCurtainWallBtn = new Button();
+            GrossWallBtn = new Button();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             SuspendLayout();
@@ -64,7 +65,7 @@
             TagDoorBtn.Name = "TagDoorBtn";
             TagDoorBtn.Size = new Size(153, 43);
             TagDoorBtn.TabIndex = 0;
-            TagDoorBtn.Text = "Tag Doors";
+            TagDoorBtn.Text = "Tag External Doors";
             TagDoorBtn.UseVisualStyleBackColor = true;
             TagDoorBtn.Click += TagDoorBtn_Click;
             // 
@@ -86,7 +87,7 @@
             TagWindowBtn.Name = "TagWindowBtn";
             TagWindowBtn.Size = new Size(153, 43);
             TagWindowBtn.TabIndex = 2;
-            TagWindowBtn.Text = "Tag Windows";
+            TagWindowBtn.Text = "Tag External Windows";
             TagWindowBtn.UseVisualStyleBackColor = true;
             TagWindowBtn.Click += TagWindowBtn_Click;
             // 
@@ -108,7 +109,7 @@
             TagWallBtn.Name = "TagWallBtn";
             TagWallBtn.Size = new Size(153, 43);
             TagWallBtn.TabIndex = 4;
-            TagWallBtn.Text = "Tag Walls";
+            TagWallBtn.Text = "Tag External Walls";
             TagWallBtn.UseVisualStyleBackColor = true;
             TagWallBtn.Click += TagWallBtn_Click;
             // 
@@ -321,11 +322,23 @@
             TagCurtainWallBtn.UseVisualStyleBackColor = true;
             TagCurtainWallBtn.Click += TagCurtainWallBtn_Click;
             // 
+            // GrossWallBtn
+            // 
+            GrossWallBtn.Location = new Point(260, 213);
+            GrossWallBtn.Margin = new Padding(4, 3, 4, 3);
+            GrossWallBtn.Name = "GrossWallBtn";
+            GrossWallBtn.Size = new Size(153, 43);
+            GrossWallBtn.TabIndex = 14;
+            GrossWallBtn.Text = "Calculate Gross Wall Area";
+            GrossWallBtn.UseVisualStyleBackColor = true;
+            GrossWallBtn.Click += GrossWallBtn_Click;
+            // 
             // TagForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(824, 646);
+            Controls.Add(GrossWallBtn);
             Controls.Add(TagCurtainWallBtn);
             Controls.Add(panel2);
             Controls.Add(panel1);
@@ -374,5 +387,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox ScheduleTagTypeComboBox;
         private Button TagCurtainWallBtn;
+        private Button GrossWallBtn;
     }
 }
